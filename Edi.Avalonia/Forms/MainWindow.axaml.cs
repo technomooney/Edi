@@ -132,6 +132,13 @@ public partial class MainWindow : Window
         DevicesGrid.ItemsSource = edi.Devices;
     }
 
+    private void btnRescan_Click(object? sender, RoutedEventArgs e)
+    {
+        var games = gamesConfig.Rescan(); // scans disk and auto-saves via PropertyChanged
+        cmbGame.ItemsSource = games.ToList();
+        if (games.Count > 0) cmbGame.SelectedIndex = 0;
+    }
+
     private async void Game_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (cmbGame.SelectedItem is not KeyValuePair<string, string> game) return;

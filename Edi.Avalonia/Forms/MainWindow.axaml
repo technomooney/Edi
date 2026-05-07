@@ -70,6 +70,9 @@
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
+                    <Button x:Name="btnRescan" Content="⟳" Width="26" Height="24"
+                            ToolTip.Tip="Rescan gallery root for games"
+                            Click="btnRescan_Click" Margin="2,0,0,0"/>
                 </StackPanel>
 
                 <!-- Connection settings grid: label column + input column -->
