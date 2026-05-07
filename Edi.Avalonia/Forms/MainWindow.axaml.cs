@@ -105,9 +105,10 @@ public partial class MainWindow : Window
     private void LoadForm()
     {
         // Populate game selector — each entry is a KeyValuePair<string,string> (name → path)
-        if (gamesConfig.Games.Count > 0)
+        var allGames = gamesConfig.GetAll();
+        if (allGames.Count > 0)
         {
-            cmbGame.ItemsSource = gamesConfig.Games.ToList();
+            cmbGame.ItemsSource = allGames.ToList();
             cmbGame.SelectedIndex = 0;
         }
 

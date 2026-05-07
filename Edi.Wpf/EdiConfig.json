@@ -74,8 +74,7 @@
     "DeviceId": -1
   },
   "Games": {
-    "Games": {
-      "My Game": "./Gallery"
-    }
+    "GamesRootPath": "./Games",
+    "Games": {}
   }
 }
