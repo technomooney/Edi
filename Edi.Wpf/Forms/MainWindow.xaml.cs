@@ -262,9 +262,9 @@ namespace Edi.Forms
                     string configPath = dialog.FileName;
 
                     var game = new GameInfo(configPath, configPath);
-                    if (!gamesConfig.GamesInfo.Any(x => x.Path == configPath))
+                    if (!gamesConfig.GetAll().ContainsValue(configPath))
                     {
-                        gamesConfig.GamesInfo.Add(game);
+                        gamesConfig.Games[configPath] = configPath;
                     }
                     await edi.SelectGame(game);
                     
