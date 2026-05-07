@@ -5,7 +5,7 @@ change was made, and what the original programmer should consider before merging
 
 Branch: `linux-port-merged`  
 Base: `master`  
-Commits: 10 (see `git log master..linux-port-merged`)
+Commits: 16 (see `git log master..linux-port-merged`)
 
 ---
 
@@ -24,6 +24,35 @@ The two goals of this branch are:
 
 These goals required a handful of small fixes to Core that are arguably improvements
 regardless of platform (null guards, auto-discovery, layout fixes).
+
+---
+
+## Summary
+
+| # | Area | Type | Safe to merge? |
+|---|------|------|----------------|
+| 1 | New `Edi.Avalonia` project | Additive | Yes — WPF is untouched |
+| 2 | Conditional NAudio/LibVLC package refs | Core change | Yes — Windows build unchanged |
+| 3 | `IAudioOutput` abstraction | Core change | Yes — interface is thin and correct |
+| 4 | Remove stale `using NAudio.*` | Cleanup | Yes — imports were unused |
+| 5 | Fix backslash path separator | Bug fix | Yes — strictly more correct |
+| 6 | Cross-platform `EdiConfig.json` defaults | Config | Yes — doesn't overwrite user configs |
+| 7 | `GamesConfig` auto-discovery | Feature | Review — `Games` key shape changed |
+| 8 | `ApiBuilder` null guard | Bug fix | Yes — prevents crash on fresh install |
+| 9 | `Edi.cs` fallback to auto-discovered game | Behaviour change | Review — priority order changed |
+| 10 | Rescan button + layout fix | Feature + bug fix | Yes |
+| 11 | Async window close fix | Bug fix | Yes — same fix needed in WPF too |
+| 12 | `net8.0` → `net9.0` bump | Version bump | Review — consider LTS implications |
+| 13 | `Edi.sln` add Avalonia project | Additive | Yes |
+| 14 | `Edi.Wpf.csproj` cross-compilation support | Build fix | Yes — no effect on native Windows build |
+| 15 | Cross-compile conditions in Core/Avalonia | Correctness fix | Yes — native builds unchanged |
+| 16 | WPF `MainWindow` `GamesInfo` → `GetAll()` | Bug fix | Yes — compile error without this |
+
+Items marked **Review** have small behaviour changes worth a second look before merging
+to mainline. Everything else is either additive (new project, new files) or a
+straightforward bug fix with no downside.
+
+Detailed notes on each change follow below.
 
 ---
 
@@ -690,29 +719,3 @@ persist the manually-browsed entry alongside the auto-discovered ones.
   If a cleaner name is desired, `Path.GetFileNameWithoutExtension(configPath)` could be
   used as the key instead.
 
----
-
-## Summary table
-
-| # | Area | Type | Safe to merge? |
-|---|------|------|----------------|
-| 1 | New `Edi.Avalonia` project | Additive | Yes — WPF is untouched |
-| 2 | Conditional NAudio/LibVLC package refs | Core change | Yes — Windows build unchanged |
-| 3 | `IAudioOutput` abstraction | Core change | Yes — interface is thin and correct |
-| 4 | Remove stale `using NAudio.*` | Cleanup | Yes — imports were unused |
-| 5 | Fix backslash path separator | Bug fix | Yes — strictly more correct |
-| 6 | Cross-platform `EdiConfig.json` defaults | Config | Yes — doesn't overwrite user configs |
-| 7 | `GamesConfig` auto-discovery | Feature | Review — `Games` key shape changed |
-| 8 | `ApiBuilder` null guard | Bug fix | Yes — prevents crash on fresh install |
-| 9 | `Edi.cs` fallback to auto-discovered game | Behaviour change | Review — priority order changed |
-| 10 | Rescan button + layout fix | Feature + bug fix | Yes |
-| 11 | Async window close fix | Bug fix | Yes — same fix needed in WPF too |
-| 12 | `net8.0` → `net9.0` bump | Version bump | Review — consider LTS implications |
-| 13 | `Edi.sln` add Avalonia project | Additive | Yes |
-| 14 | `Edi.Wpf.csproj` cross-compilation support | Build fix | Yes — no effect on native Windows build |
-| 15 | Cross-compile conditions in Core/Avalonia | Correctness fix | Yes — native builds unchanged |
-| 16 | WPF `MainWindow` `GamesInfo` → `GetAll()` | Bug fix | Yes — compile error without this |
-
-Items marked **Review** have small behaviour changes worth a second look before merging
-to mainline. Everything else is either additive (new project, new files) or a
-straightforward bug fix with no downside.
