@@ -8,7 +8,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- WPF is Windows-only; define WINDOWS_BUILD unconditionally so #if guards resolve correctly -->
+    <DefineConstants>$(DefineConstants);WINDOWS_BUILD</DefineConstants>
     <AssemblyName>Edi</AssemblyName>
 	  <Version>1.0.2</Version>
 	  <AssemblyVersion>1.0.2</AssemblyVersion>
@@ -26,6 +30,7 @@
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	</PackageReference>
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0" />
     <PackageReference Include="Serilog" Version="4.2.0" />

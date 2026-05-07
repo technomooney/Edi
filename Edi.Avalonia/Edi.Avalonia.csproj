@@ -8,8 +8,8 @@
     <Version>1.0.2</Version>
   </PropertyGroup>
 
-  <!-- Define WINDOWS_BUILD when compiling on Windows so we can guard NAudio calls -->
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <!-- WINDOWS_BUILD: true when building ON Windows or cross-compiling TO Windows (via RuntimeIdentifier) -->
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows')) or $(RuntimeIdentifier.StartsWith('win'))">
     <DefineConstants>$(DefineConstants);WINDOWS_BUILD</DefineConstants>
   </PropertyGroup>
 
@@ -26,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.4" />
-    <PackageReference Include="NAudio" Version="2.2.1" Condition="$([MSBuild]::IsOSPlatform('Windows'))"/>
+    <PackageReference Include="NAudio" Version="2.2.1" Condition="$([MSBuild]::IsOSPlatform('Windows')) or $(RuntimeIdentifier.StartsWith('win'))"/>
     <PackageReference Include="System.IO.Ports" Version="9.0.4" />
   </ItemGroup>
 
