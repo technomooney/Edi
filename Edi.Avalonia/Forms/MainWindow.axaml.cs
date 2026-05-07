@@ -134,9 +134,11 @@ public partial class MainWindow : Window
 
     private void btnRescan_Click(object? sender, RoutedEventArgs e)
     {
-        var games = gamesConfig.Rescan(); // scans disk and auto-saves via PropertyChanged
+        cmbGame.SelectionChanged -= Game_SelectionChanged;
+        var games = gamesConfig.Rescan();
         cmbGame.ItemsSource = games.ToList();
         if (games.Count > 0) cmbGame.SelectedIndex = 0;
+        cmbGame.SelectionChanged += Game_SelectionChanged;
     }
 
     private async void Game_SelectionChanged(object? sender, SelectionChangedEventArgs e)

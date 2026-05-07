@@ -60,20 +60,25 @@
                 </StackPanel>
 
                 <!-- Game selector — switches the active gallery folder -->
-                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,6">
-                    <Label Content="Game:" VerticalAlignment="Center" FontSize="11" Width="82"/>
-                    <ComboBox x:Name="cmbGame" HorizontalAlignment="Stretch" Height="24"
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="82"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Game:" VerticalAlignment="Center" FontSize="11"/>
+                    <ComboBox Grid.Column="1" x:Name="cmbGame" Height="24"
                               SelectionChanged="Game_SelectionChanged">
                         <ComboBox.ItemTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Key}"/>
+                                <TextBlock Text="{Binding Key}" TextTrimming="CharacterEllipsis"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>
-                    <Button x:Name="btnRescan" Content="⟳" Width="26" Height="24"
+                    <Button Grid.Column="2" x:Name="btnRescan" Height="24" Padding="6,0"
                             ToolTip.Tip="Rescan gallery root for games"
-                            Click="btnRescan_Click" Margin="2,0,0,0"/>
-                </StackPanel>
+                            Click="btnRescan_Click" Margin="2,0,0,0">Rescan</Button>
+                </Grid>
 
                 <!-- Connection settings grid: label column + input column -->
                 <Grid VerticalAlignment="Top">

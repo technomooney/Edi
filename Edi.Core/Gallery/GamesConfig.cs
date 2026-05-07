@@ -29,13 +29,19 @@ namespace Edi.Core.Gallery
             return Games;
         }
 
+        private string ResolvedRootPath =>
+            Path.IsPathRooted(GalleryRootPath)
+                ? GalleryRootPath
+                : Path.Combine(AppContext.BaseDirectory, GalleryRootPath);
+
         private Dictionary<string, string> Scan()
         {
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var root = ResolvedRootPath;
 
-            if (!string.IsNullOrWhiteSpace(GalleryRootPath) && Directory.Exists(GalleryRootPath))
+            if (!string.IsNullOrWhiteSpace(GalleryRootPath) && Directory.Exists(root))
             {
-                foreach (var dir in Directory.EnumerateDirectories(GalleryRootPath))
+                foreach (var dir in Directory.EnumerateDirectories(root))
                 {
                     var hasDefs = File.Exists(Path.Combine(dir, "Definitions.csv"))
                                || File.Exists(Path.Combine(dir, "Definitions_auto.csv"));
