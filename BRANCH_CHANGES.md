@@ -562,6 +562,136 @@ Rider alongside the existing projects.
 
 ---
 
+## Change 14 — `Edi.Wpf.csproj`: enable cross-compilation from Linux
+
+**File:** `Edi.Wpf/Edi.Wpf.csproj`  
+**Commit:** `d61064c`
+
+### What
+Four additions to the WPF project file:
+
+```xml
+<EnableWindowsTargeting>true</EnableWindowsTargeting>
+<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+<DefineConstants>$(DefineConstants);WINDOWS_BUILD</DefineConstants>
+```
+```xml
+<PackageReference Include="NAudio" Version="2.2.1" />
+```
+
+### Why
+Without these, `dotnet build Edi.Wpf` fails with two separate errors on Linux:
+
+- **NETSDK1100** (`EnableWindowsTargeting` missing): The SDK refuses to download Windows
+  reference assemblies on a non-Windows build machine, so no WPF or `Microsoft.Windows`
+  types can be resolved — not even by the C# compiler.
+- **NETSDK1082** (`RuntimeIdentifier` missing): `SelfContained=true` without a RID
+  defaults to `linux-x64`. There is no WPF runtime pack for `linux-x64`, so the restore
+  step fails.
+
+`WINDOWS_BUILD` is defined unconditionally here because WPF is a Windows-only project —
+the condition is always true. Without it, `#if WINDOWS_BUILD` guards in referenced code
+would silently evaluate as false during a Linux cross-compile, producing incorrect results.
+
+NAudio was being pulled in transitively from `Edi.Core` (which has a conditional
+`PackageReference`). That transitive reference disappears on Linux because `Edi.Core`'s
+condition uses `IsOSPlatform('Windows')` (false on Linux). Making the WPF dependency
+explicit is correct regardless of platform.
+
+### What the original programmer should check
+- `RuntimeIdentifier=win-x64` means `dotnet build` from Linux always produces a
+  `win-x64` binary. If the original project previously produced an `Any CPU` or
+  `win-x86` output, the publish profile should be checked. The `RuntimeIdentifier` here
+  matches the existing `SelfContained=true` + `PublishSingleFile=true` configuration
+  which already implies a single-RID output.
+- `EnableWindowsTargeting` is a .NET 7+ feature. It has no effect on Windows builds.
+
+---
+
+## Change 15 — `Edi.Core`/`Edi.Avalonia` conditions: support cross-compilation
+
+**Files:** `Edi.Core/Edi.Core.csproj`, `Edi.Avalonia/Edi.Avalonia.csproj`  
+**Commit:** `d61064c`
+
+### What
+All three `WINDOWS_BUILD` conditions and the NAudio/LibVLCSharp conditions were updated
+from:
+
+```xml
+Condition="$([MSBuild]::IsOSPlatform('Windows'))"
+```
+
+to:
+
+```xml
+Condition="$([MSBuild]::IsOSPlatform('Windows')) or $(RuntimeIdentifier.StartsWith('win'))"
+```
+
+(and the inverse conditions for LibVLCSharp updated to match.)
+
+### Why
+`IsOSPlatform('Windows')` checks the OS the *build is running on*, not the OS being
+*targeted*. When cross-compiling on Linux with `RuntimeIdentifier=win-x64` (e.g.
+`dotnet publish -r win-x64` to produce a Windows release build), the condition was
+`false` even though the output was a Windows binary. This had two incorrect effects:
+
+1. **Wrong audio backend**: LibVLCSharp would be compiled into the Windows binary instead
+   of NAudio. The resulting exe would crash at startup on Windows because libvlc is not
+   present on a typical Windows machine.
+2. **`WINDOWS_BUILD` not defined**: All `#if WINDOWS_BUILD` guards would evaluate as
+   false in a cross-compiled Windows binary, causing the same LibVLC/NAudio selection
+   issue at the `EStimProvider` factory.
+
+The `RuntimeIdentifier.StartsWith('win')` addition means the correct backend is always
+selected based on the target platform, regardless of which OS the build is running on.
+
+### What the original programmer should check
+- On a native Windows build (no RID specified), `RuntimeIdentifier` is empty so
+  `StartsWith('win')` is false — behaviour is identical to before.
+- On a native Linux build targeting Linux, both conditions are false — LibVLCSharp is
+  selected as before.
+- Only the cross-compile case (Linux → Windows) is affected, and it now correctly selects
+  NAudio.
+
+---
+
+## Change 16 — `Edi.Wpf/MainWindow.xaml.cs`: fix `GamesInfo` references broken by `GamesConfig` refactor
+
+**File:** `Edi.Wpf/Forms/MainWindow.xaml.cs`  
+**Commit:** `4499c1a`
+
+### What
+Two call sites in the browse-for-game dialog handler referenced `GamesConfig.GamesInfo`
+(the old `ObservableCollection<GameInfo>`), which was removed in Change 7:
+
+```csharp
+// Before
+var game = new GameInfo(configPath, configPath);
+if (!gamesConfig.GamesInfo.Any(x => x.Path == configPath))
+    gamesConfig.GamesInfo.Add(game);
+
+// After
+var game = new GameInfo(configPath, configPath);
+if (!gamesConfig.GetAll().ContainsValue(configPath))
+    gamesConfig.Games[configPath] = configPath;
+```
+
+### Why
+This was a compile error (`CS1061`) introduced by Change 7's removal of `GamesInfo`.
+The WPF project would not build at all without this fix. The new code uses `GetAll()`
+for the existence check (reads from cache or scans) and directly assigns to `Games` to
+persist the manually-browsed entry alongside the auto-discovered ones.
+
+### What the original programmer should check
+- The old code added a `GameInfo(configPath, configPath)` — using the full file path as
+  both the `Name` and the `Path`. The new code preserves this: `Games[configPath] =
+  configPath` gives the same name = path result. The display in the WPF ComboBox will
+  show the full path as the game name, which was always the case with this browse path.
+  If a cleaner name is desired, `Path.GetFileNameWithoutExtension(configPath)` could be
+  used as the key instead.
+
+---
+
 ## Summary table
 
 | # | Area | Type | Safe to merge? |
@@ -579,6 +709,9 @@ Rider alongside the existing projects.
 | 11 | Async window close fix | Bug fix | Yes — same fix needed in WPF too |
 | 12 | `net8.0` → `net9.0` bump | Version bump | Review — consider LTS implications |
 | 13 | `Edi.sln` add Avalonia project | Additive | Yes |
+| 14 | `Edi.Wpf.csproj` cross-compilation support | Build fix | Yes — no effect on native Windows build |
+| 15 | Cross-compile conditions in Core/Avalonia | Correctness fix | Yes — native builds unchanged |
+| 16 | WPF `MainWindow` `GamesInfo` → `GetAll()` | Bug fix | Yes — compile error without this |
 
 Items marked **Review** have small behaviour changes worth a second look before merging
 to mainline. Everything else is either additive (new project, new files) or a
