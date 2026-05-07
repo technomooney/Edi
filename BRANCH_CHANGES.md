@@ -31,22 +31,22 @@ regardless of platform (null guards, auto-discovery, layout fixes).
 
 | # | Area | Type | Safe to merge? |
 |---|------|------|----------------|
-| 1 | New `Edi.Avalonia` project | Additive | Yes — WPF is untouched |
-| 2 | Conditional NAudio/LibVLC package refs | Core change | Yes — Windows build unchanged |
-| 3 | `IAudioOutput` abstraction | Core change | Yes — interface is thin and correct |
-| 4 | Remove stale `using NAudio.*` | Cleanup | Yes — imports were unused |
-| 5 | Fix backslash path separator | Bug fix | Yes — strictly more correct |
-| 6 | Cross-platform `EdiConfig.json` defaults | Config | Yes — doesn't overwrite user configs |
-| 7 | `GamesConfig` auto-discovery | Feature | Review — `Games` key shape changed |
-| 8 | `ApiBuilder` null guard | Bug fix | Yes — prevents crash on fresh install |
-| 9 | `Edi.cs` fallback to auto-discovered game | Behaviour change | Review — priority order changed |
-| 10 | Rescan button + layout fix | Feature + bug fix | Yes |
-| 11 | Async window close fix | Bug fix | Yes — same fix needed in WPF too |
-| 12 | `net8.0` → `net9.0` bump | Version bump | Review — consider LTS implications |
-| 13 | `Edi.sln` add Avalonia project | Additive | Yes |
-| 14 | `Edi.Wpf.csproj` cross-compilation support | Build fix | Yes — no effect on native Windows build |
-| 15 | Cross-compile conditions in Core/Avalonia | Correctness fix | Yes — native builds unchanged |
-| 16 | WPF `MainWindow` `GamesInfo` → `GetAll()` | Bug fix | Yes — compile error without this |
+| [1](#change-1) | New `Edi.Avalonia` project | Additive | Yes — WPF is untouched |
+| [2](#change-2) | Conditional NAudio/LibVLC package refs | Core change | Yes — Windows build unchanged |
+| [3](#change-3) | `IAudioOutput` abstraction | Core change | Yes — interface is thin and correct |
+| [4](#change-4) | Remove stale `using NAudio.*` | Cleanup | Yes — imports were unused |
+| [5](#change-5) | Fix backslash path separator | Bug fix | Yes — strictly more correct |
+| [6](#change-6) | Cross-platform `EdiConfig.json` defaults | Config | Yes — doesn't overwrite user configs |
+| [7](#change-7) | `GamesConfig` auto-discovery | Feature | Review — `Games` key shape changed |
+| [8](#change-8) | `ApiBuilder` null guard | Bug fix | Yes — prevents crash on fresh install |
+| [9](#change-9) | `Edi.cs` fallback to auto-discovered game | Behaviour change | Review — priority order changed |
+| [10](#change-10) | Rescan button + layout fix | Feature + bug fix | Yes |
+| [11](#change-11) | Async window close fix | Bug fix | Yes — same fix needed in WPF too |
+| [12](#change-12) | `net8.0` → `net9.0` bump | Version bump | Review — consider LTS implications |
+| [13](#change-13) | `Edi.sln` add Avalonia project | Additive | Yes |
+| [14](#change-14) | `Edi.Wpf.csproj` cross-compilation support | Build fix | Yes — no effect on native Windows build |
+| [15](#change-15) | Cross-compile conditions in Core/Avalonia | Correctness fix | Yes — native builds unchanged |
+| [16](#change-16) | WPF `MainWindow` `GamesInfo` → `GetAll()` | Bug fix | Yes — compile error without this |
 
 Items marked **Review** have small behaviour changes worth a second look before merging
 to mainline. Everything else is either additive (new project, new files) or a
@@ -56,6 +56,7 @@ Detailed notes on each change follow below.
 
 ---
 
+<a id="change-1"></a>
 ## Change 1 — New project: `Edi.Avalonia`
 
 **Files added:** entire `Edi.Avalonia/` directory  
@@ -165,6 +166,7 @@ No runtime `if (Windows) {...}` branching is needed in application code for UI c
 
 ---
 
+<a id="change-2"></a>
 ## Change 2 — `Edi.Core.csproj`: platform-conditional package references
 
 **File:** `Edi.Core/Edi.Core.csproj`  
@@ -217,6 +219,7 @@ the system-installed `libvlc`.
 
 ---
 
+<a id="change-3"></a>
 ## Change 3 — EStim audio abstraction (`IAudioOutput`)
 
 **Files:**
@@ -306,6 +309,7 @@ wrong platform.
 
 ---
 
+<a id="change-4"></a>
 ## Change 4 — Remove stale NAudio `using` statements across Core
 
 **Files:** `AutoBlowProvider.cs`, `HandyProvider.cs`, `AudioGallery.cs`,
@@ -331,6 +335,7 @@ earlier refactoring.
 
 ---
 
+<a id="change-5"></a>
 ## Change 5 — Fix hardcoded backslash path separator in `DefinitionRepository`
 
 **File:** `Edi.Core/Gallery/Definition/DefinitionRepository.cs`  
@@ -359,6 +364,7 @@ absolute path. This caused gallery lookup to fail (no names matched).
 
 ---
 
+<a id="change-6"></a>
 ## Change 6 — `EdiConfig.json` cross-platform defaults
 
 **Files:** `Edi.Wpf/EdiConfig.json`, `EdiConfig.json` (repo root)  
@@ -393,6 +399,7 @@ executable directory work everywhere.
 
 ---
 
+<a id="change-7"></a>
 ## Change 7 — `GamesConfig`: auto-discover games from a root folder
 
 **File:** `Edi.Core/Gallery/GamesConfig.cs`  
@@ -429,6 +436,7 @@ makes the common case (one root folder, many game subfolders) zero-config.
 
 ---
 
+<a id="change-8"></a>
 ## Change 8 — `ApiBuilder`: null guard for missing gallery path
 
 **File:** `Edi.Core/Services/ApiBuilder.cs`  
@@ -462,6 +470,7 @@ the user sets a path and restarts.
 
 ---
 
+<a id="change-9"></a>
 ## Change 9 — `Edi.cs`: fallback to auto-discovered game when path is null
 
 **File:** `Edi.Core/Services/Edi.cs`  
@@ -491,6 +500,7 @@ the first game found in `GalleryRootPath` is used automatically instead.
 
 ---
 
+<a id="change-10"></a>
 ## Change 10 — `MainWindow` (Avalonia): Rescan button and game selector fixes
 
 **Files:** `Edi.Avalonia/Forms/MainWindow.axaml`, `MainWindow.axaml.cs`,
@@ -515,6 +525,7 @@ gallery and the player picks up from the first track.
 
 ---
 
+<a id="change-11"></a>
 ## Change 11 — Fix window close not awaiting device shutdown
 
 **File:** `Edi.Avalonia/Forms/MainWindow.axaml.cs`  
@@ -556,6 +567,7 @@ issues a real `Close()`.
 
 ---
 
+<a id="change-12"></a>
 ## Change 12 — .NET version bump: `net8.0` → `net9.0`
 
 **Files:** `Edi.Console/Edi.Consola.csproj`, `Edi.Core/Edi.Core.csproj`,
@@ -580,6 +592,7 @@ runtime for `dotnet build` to succeed. .NET 9 is the current stable release (Nov
 
 ---
 
+<a id="change-13"></a>
 ## Change 13 — `Edi.sln`: added `Edi.Avalonia` project
 
 **File:** `Edi.sln`  
@@ -591,6 +604,7 @@ Rider alongside the existing projects.
 
 ---
 
+<a id="change-14"></a>
 ## Change 14 — `Edi.Wpf.csproj`: enable cross-compilation from Linux
 
 **File:** `Edi.Wpf/Edi.Wpf.csproj`  
@@ -637,6 +651,7 @@ explicit is correct regardless of platform.
 
 ---
 
+<a id="change-15"></a>
 ## Change 15 — `Edi.Core`/`Edi.Avalonia` conditions: support cross-compilation
 
 **Files:** `Edi.Core/Edi.Core.csproj`, `Edi.Avalonia/Edi.Avalonia.csproj`  
@@ -684,6 +699,7 @@ selected based on the target platform, regardless of which OS the build is runni
 
 ---
 
+<a id="change-16"></a>
 ## Change 16 — `Edi.Wpf/MainWindow.xaml.cs`: fix `GamesInfo` references broken by `GamesConfig` refactor
 
 **File:** `Edi.Wpf/Forms/MainWindow.xaml.cs`  
