@@ -88,7 +88,10 @@ namespace Edi.Core
 
         public async Task Init(string path)
         {
-            path = path ?? ConfigurationManager.Get<GalleryConfig>()?.GalleryPath ?? "./";
+            path = path
+                ?? ConfigurationManager.Get<GamesConfig>()?.GetAll().Values.FirstOrDefault()
+                ?? ConfigurationManager.Get<GalleryConfig>()?.GalleryPath
+                ?? "./";
             foreach (var repo in repos)
             {
                 await repo.Init(path);

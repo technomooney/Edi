@@ -1,6 +1,5 @@
 {
   "Gallery": {
-    "GalleryPath": "./Gallery",
     "GenerateDefinitionFromChapters": false,
     "GenerateChaptersFromDefinition": false
   },
