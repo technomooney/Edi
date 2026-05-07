@@ -283,10 +283,19 @@ public partial class MainWindow : Window
         await edi.Intensity(Convert.ToInt32(sliderIntensity.Value));
     }
 
+    private bool _isClosing;
     private async void MainWindow_Closing(object? sender, WindowClosingEventArgs e)
     {
+        if (_isClosing) return;
+        e.Cancel = true;
+        _isClosing = true;
+
         await edi.Pause();
-        await Task.Delay(1000);
+        await Task.Delay(500);
+
+        // Unsubscribe to prevent re-entry, then close for real
+        Closing -= MainWindow_Closing;
+        Close();
     }
 }
 
