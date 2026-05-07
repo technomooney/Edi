@@ -5,22 +5,17 @@ namespace Edi.Core.Gallery
     [AddINotifyPropertyChangedInterface]
     public class GamesConfig
     {
-        // Optional: path to a root folder. Any immediate subfolder containing
-        // Definitions.csv or Definitions_auto.csv is treated as a game.
-        public string GamesRootPath { get; set; } = "";
+        // Root folder to scan. Any immediate subfolder containing
+        // Definitions.csv or Definitions_auto.csv becomes a game entry.
+        public string GalleryRootPath { get; set; } = "";
 
-        // Explicit name→path overrides / additions (loaded from config file)
-        public Dictionary<string, string> Games { get; set; } = new();
-
-        // Returns discovered games merged with manual Games entries.
-        // Manual entries take precedence (same name wins).
         public Dictionary<string, string> GetAll()
         {
             var result = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-            if (!string.IsNullOrWhiteSpace(GamesRootPath) && Directory.Exists(GamesRootPath))
+            if (!string.IsNullOrWhiteSpace(GalleryRootPath) && Directory.Exists(GalleryRootPath))
             {
-                foreach (var dir in Directory.EnumerateDirectories(GamesRootPath))
+                foreach (var dir in Directory.EnumerateDirectories(GalleryRootPath))
                 {
                     var hasDefs = File.Exists(Path.Combine(dir, "Definitions.csv"))
                                || File.Exists(Path.Combine(dir, "Definitions_auto.csv"));
@@ -28,10 +23,6 @@ namespace Edi.Core.Gallery
                         result[Path.GetFileName(dir)] = dir;
                 }
             }
-
-            // Manual entries override auto-discovered ones
-            foreach (var kv in Games)
-                result[kv.Key] = kv.Value;
 
             return result;
         }
