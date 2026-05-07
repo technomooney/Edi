@@ -9,7 +9,6 @@ using System.Runtime.CompilerServices;
 using System;
 using Edi.Core.Gallery.Definition;
 using System.Xml.Linq;
-using NAudio.Dmo;
 using System.Security.Cryptography.X509Certificates;
 using System.IO;
 using Edi.Core.Gallery.Funscript;

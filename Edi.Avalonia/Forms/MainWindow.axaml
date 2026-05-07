@@ -1,0 +1,161 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="using:Edi.Avalonia.Forms"
+        x:Class="Edi.Avalonia.Forms.MainWindow"
+        Title="Edi Launcher"
+        Width="680" Height="390"
+        CanResize="False">
+
+    <Window.Resources>
+        <local:BoolToReadyIconConverter x:Key="BoolToReadyIconConverter"/>
+    </Window.Resources>
+
+    <!--
+        DockPanel is like CSS flexbox with flex-direction per child.
+        Status bar is docked to the bottom; everything else fills the remaining space.
+    -->
+    <DockPanel Margin="6">
+
+        <!-- Status bar + swagger link pinned to the bottom -->
+        <StackPanel DockPanel.Dock="Bottom">
+            <TextBlock x:Name="swaggerLink"
+                       Foreground="Blue" Cursor="Hand"
+                       Text="http://localhost:5000/swagger/index.html"
+                       Margin="2,2,0,0"/>
+            <Label x:Name="lblStatus" Content="Status:" Padding="2,2"/>
+        </StackPanel>
+
+        <!-- Two-column main area -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="310"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── Left column: connection settings + playback ── -->
+            <DockPanel Grid.Column="0" Margin="0,0,6,0">
+
+                <!-- Playback controls pinned to the bottom of the left column -->
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,6,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <Label Content="Intensity:" VerticalAlignment="Center"/>
+                        <Slider x:Name="sliderIntensity" Width="100" Value="100" Maximum="100"
+                                VerticalAlignment="Center" Margin="4,0,0,0"
+                                ValueChanged="Slider_ValueChanged"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox x:Name="cmbGallerie" Width="148" Height="24" ItemsSource="{Binding galleries}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <Button Height="24" Padding="6,0" ToolTip.Tip="Play"          x:Name="btnPlay"      Click="btnPlay_Click"      Margin="2,0,0,0">Play</Button>
+                        <Button Height="24" Padding="6,0" ToolTip.Tip="Stop"          x:Name="btnStop"      Click="btnStop_Click"      Margin="2,0,0,0">Stop</Button>
+                        <Button Height="24" Padding="6,0" ToolTip.Tip="Pause"         x:Name="btnPause"     Click="btnPause_Click"     Margin="2,0,0,0">Pause</Button>
+                        <Button Height="24" Padding="6,0" ToolTip.Tip="Resume"        x:Name="btnResume"    Click="btnResume_Click"    Margin="2,0,0,0">Resume</Button>
+                        <Button Height="24" Padding="6,0" ToolTip.Tip="Action Preview" x:Name="btnSimulator" Click="btnSimulator_Click" Margin="2,0,0,0">Preview</Button>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Game selector — switches the active gallery folder -->
+                <Grid DockPanel.Dock="Top" Margin="0,0,0,6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="82"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Column="0" Content="Game:" VerticalAlignment="Center" FontSize="11"/>
+                    <ComboBox Grid.Column="1" x:Name="cmbGame" Height="24"
+                              SelectionChanged="Game_SelectionChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Key}" TextTrimming="CharacterEllipsis"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Grid.Column="2" x:Name="btnRescan" Height="24" Padding="6,0"
+                            ToolTip.Tip="Rescan gallery root for games"
+                            Click="btnRescan_Click" Margin="2,0,0,0">Rescan</Button>
+                </Grid>
+
+                <!-- Connection settings grid: label column + input column -->
+                <Grid VerticalAlignment="Top">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="82"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="32"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Row="0" Grid.Column="0" Content="Devices Keys:" VerticalAlignment="Center" FontSize="11"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" ToolTip.Tip="Handy, AutoBlow" Text="{Binding handyConfig.Key}" VerticalAlignment="Center"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Intiface Url:" VerticalAlignment="Center" FontSize="11"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" ToolTip.Tip="Buttplug Url" Text="{Binding buttplugConfig.Url}" VerticalAlignment="Center"/>
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="EStim Audio:" VerticalAlignment="Center" FontSize="11"/>
+                    <ComboBox Grid.Row="2" Grid.Column="1" Name="audioDevicesComboBox"
+                              SelectionChanged="AudioDevice_SelectionChanged" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{Binding name}"/></DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <Label Grid.Row="3" Grid.Column="0" Content="OSR Port:" VerticalAlignment="Center" FontSize="11"/>
+                    <ComboBox Grid.Row="3" Grid.Column="1" Name="comPortsComboBox"
+                              SelectionChanged="ComPort_SelectionChanged" VerticalAlignment="Center">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate><TextBlock Text="{Binding name}"/></DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                                Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button x:Name="ReconnectButton"  Content="Reconnect"       Height="24" Padding="6,0" Click="ReconnectButton_ClickAsync"/>
+                        <Button x:Name="ReloadButton"     Content="Reload Galleries" Height="24" Padding="6,0" Click="ReloadButton_Click"  Margin="4,0,0,0"/>
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+
+            <!-- ── Right column: checkboxes + device grid ── -->
+            <DockPanel Grid.Column="1">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,4">
+                    <CheckBox x:Name="chkFiller"   Content="Filler"   IsChecked="{Binding config.Filler,   Mode=TwoWay}" Margin="0,0,10,0"/>
+                    <CheckBox x:Name="chkGallery"  Content="Gallery"  IsChecked="{Binding config.Gallery,  Mode=TwoWay}" Margin="0,0,10,0"/>
+                    <CheckBox x:Name="chkReaction" Content="Reaction" IsChecked="{Binding config.Reactive, Mode=TwoWay}"/>
+                </StackPanel>
+                <Label DockPanel.Dock="Top" Content="Devices:"/>
+                <DataGrid x:Name="DevicesGrid"
+                          ItemsSource="{Binding devices}"
+                          AutoGenerateColumns="False"
+                          CanUserReorderColumns="False"
+                          CanUserResizeColumns="False"
+                          CanUserSortColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True" Width="*"/>
+                        <DataGridTemplateColumn Header="Variant" Width="120">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox x:Name="Variants"
+                                              ItemsSource="{Binding Variants}"
+                                              SelectionChanged="Variants_SelectionChanged"
+                                              SelectedItem="{Binding SelectedVariant, Mode=TwoWay}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Ready" FontSize="14" Width="52"
+                                            Binding="{Binding IsReady, Converter={StaticResource BoolToReadyIconConverter}}"
+                                            IsReadOnly="True"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </DockPanel>
+</Window>

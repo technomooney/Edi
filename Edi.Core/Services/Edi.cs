@@ -10,7 +10,6 @@ using Edi.Core.Players;
 using Edi.Core.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
-using NAudio.Wave.SampleProviders;
 using PropertyChanged;
 using Serilog.Core;
 using System;
@@ -64,8 +63,10 @@ namespace Edi.Core
         {
             if (string.IsNullOrWhiteSpace(path))
             {
-                // Primer escape: configuración actual
-                return ConfigurationManager.Get<GalleryConfig>()?.GalleryPath ?? "./";
+                // Fall back to first auto-discovered game, then GalleryConfig path
+                return ConfigurationManager.Get<GamesConfig>()?.GetAll().Values.FirstOrDefault()
+                    ?? ConfigurationManager.Get<GalleryConfig>()?.GalleryPath
+                    ?? "./";
             }
 
             if (!Path.GetFileName(path).Equals("EdiConfig.json", StringComparison.OrdinalIgnoreCase))

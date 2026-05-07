@@ -1,19 +1,14 @@
-﻿using Edi.Core.Device;
 using Edi.Core.Device.Interfaces;
 using Edi.Core.Gallery.EStimAudio;
 using Edi.Core.Services;
 using Microsoft.Extensions.Logging;
-using NAudio.Wave;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Edi.Core.Device.EStim
 {
     public class EStimProvider : IDeviceProvider
     {
         private readonly ILogger _logger;
-        private readonly List<EStimDevice> _devices = new List<EStimDevice>();
+        private readonly List<EStimDevice> _devices = new();
 
         public EStimProvider(AudioRepository audioRepository, ConfigurationManager config, DeviceCollector deviceCollector, ILogger<EStimProvider> logger)
         {
@@ -33,7 +28,6 @@ namespace Edi.Core.Device.EStim
         {
             _logger.LogInformation("Initialization started.");
 
-            // Unload existing devices
             foreach (var eStimDevice in _devices)
             {
                 _logger.LogInformation($"Unloading device: {eStimDevice}");
@@ -41,7 +35,6 @@ namespace Edi.Core.Device.EStim
             }
             _devices.Clear();
 
-            // Validate configuration
             if (Config.DeviceId == -1)
             {
                 _logger.LogWarning("DeviceId is set to -1. Initialization will be skipped.");
@@ -50,8 +43,8 @@ namespace Edi.Core.Device.EStim
 
             try
             {
-                var outputDevice = new WaveOutEvent() { DeviceNumber = Config.DeviceId };
-                var device = new EStimDevice(AudioRepository, outputDevice, _logger);
+                IAudioOutput output = CreateAudioOutput(Config.DeviceId);
+                var device = new EStimDevice(AudioRepository, output, _logger);
 
                 DeviceCollector.LoadDevice(device);
                 _devices.Add(device);
@@ -62,6 +55,15 @@ namespace Edi.Core.Device.EStim
             {
                 _logger.LogError($"Error initializing device with DeviceId {Config.DeviceId}: {ex.Message}");
             }
+        }
+
+        private static IAudioOutput CreateAudioOutput(int deviceNumber)
+        {
+#if WINDOWS_BUILD
+            return new NAudioOutput(deviceNumber);
+#else
+            return new LibVlcAudioOutput(deviceNumber);
+#endif
         }
     }
 }

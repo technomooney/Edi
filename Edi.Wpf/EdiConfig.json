@@ -15,21 +15,15 @@
     "GenerateChaptersFromDefinition": false,
     "InproveLoopDetection": true
   },
+  "GalleryBundler": {
+    "MinRepeatDuration": 7000,
+    "RepeatDuration": 2000,
+    "SpacerDuration": 5000,
+    "DisableBundler": false
+  },
   "Devices": {
     "Devices": {
       "FUNOSR-SSR1-V2.0": {
-        "Variant": "None",
-        "Channel": null,
-        "Min": 0,
-        "Max": 100
-      },
-      "Lovense Edge Vibrate: 1": {
-        "Variant": "None",
-        "Channel": null,
-        "Min": 0,
-        "Max": 100
-      },
-      "Lovense Edge Vibrate: 2": {
         "Variant": "None",
         "Channel": null,
         "Min": 0,
@@ -40,31 +34,35 @@
         "Channel": null,
         "Min": 0,
         "Max": 100
-      },
-      "The Handy [RFupA]": {
-        "Variant": "None",
-        "Channel": null,
-        "Min": 0,
-        "Max": 100
-      },
-      "The Handy [RFupA] (1)": {
-        "Variant": "None",
-        "Channel": null,
-        "Min": 0,
-        "Max": 100
-      },
-      "The Handy [RFupA] (2)": {
-        "Variant": "None",
-        "Channel": null,
-        "Min": 0,
-        "Max": 100
       }
     }
   },
-  "GalleryBundler": {
-    "MinRepeatDuration": 7000,
-    "RepeatDuration": 2000,
-    "SpacerDuration": 5000,
-    "DisableBundler": false
+  "OSR": {
+    "COMPort": "COM3",
+    "EnableMultiAxis": true,
+    "UpdateRate": 200,
+    "RangeLimits": {
+      "Linear": { "LowerLimit": 0, "UpperLimit": 100 },
+      "Roll":   { "LowerLimit": 0, "UpperLimit": 100 },
+      "Pitch":  { "LowerLimit": 0, "UpperLimit": 100 },
+      "Twist":  { "LowerLimit": 0, "UpperLimit": 100 },
+      "Sway":   { "LowerLimit": 0, "UpperLimit": 100 },
+      "Surge":  { "LowerLimit": 0, "UpperLimit": 100 }
+    }
+  },
+  "Buttplug": {
+    "Url": "ws://localhost:12345",
+    "MinCommandDelay": 60,
+    "VibratorInercialDelay": 80
+  },
+  "Handy": {
+    "Key": ""
+  },
+  "EStim": {
+    "DeviceId": -1
+  },
+  "Games": {
+    "GalleryRootPath": "./Games",
+    "Games": {}
   }
 }

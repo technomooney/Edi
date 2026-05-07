@@ -2,7 +2,6 @@
 using Edi.Core.Gallery;
 using Edi.Core.Gallery.Index;
 using Edi.Core.Gallery.Funscript;
-using NAudio.CoreAudioApi;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

@@ -3,7 +3,6 @@ using Edi.Core.Device;
 using Edi.Core.Device.Interfaces;
 using Edi.Core.Gallery.Funscript;
 using Microsoft.Extensions.Logging;
-using NAudio.CoreAudioApi;
 using Newtonsoft.Json;
 using PropertyChanged;
 using System;

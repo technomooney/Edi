@@ -1,7 +1,6 @@
 ﻿using Edi.Core.Device;
 using Edi.Core.Device.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using NAudio.CoreAudioApi;
 using PropertyChanged;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

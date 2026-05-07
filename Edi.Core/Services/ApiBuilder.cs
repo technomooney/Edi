@@ -57,8 +57,25 @@ namespace Edi.Core
             });
             var app = builder.Build();
 
-            var galleryPath = new DirectoryInfo(config.Get<GalleryConfig>().GalleryPath).FullName;
+            var galleryPath = config.Get<GalleryConfig>().GalleryPath;
+            if (!string.IsNullOrEmpty(galleryPath) && Directory.Exists(galleryPath))
+            {
+                app.UseStaticFiles(new StaticFileOptions
+                {
+                    FileProvider = new PhysicalFileProvider(new DirectoryInfo(galleryPath).FullName),
+                    RequestPath = "/Edi/Assets",
+                    ServeUnknownFileTypes = true,
+                    ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string>() { { ".funscript", "application/json" } })
+                });
+            }
 
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                FileProvider = new PhysicalFileProvider(uploadPath),
+                RequestPath = "/Edi/Upload",
+                ServeUnknownFileTypes = true,
+                ContentTypeProvider = new FileExtensionContentTypeProvider(new Dictionary<string, string>() { { ".funscript", "application/json" } })
+            });
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>

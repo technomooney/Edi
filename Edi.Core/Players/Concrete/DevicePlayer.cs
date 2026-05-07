@@ -2,8 +2,6 @@
 using Edi.Core.Device.Interfaces;
 using Edi.Core.Gallery;
 using Edi.Core.Services;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
 using Serilog;
 using System.Collections.Concurrent;
 using System.ComponentModel;
