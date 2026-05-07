@@ -29,16 +29,15 @@ namespace Edi.Core.Gallery.Definition
         public async Task Init(string path)
         {
             path = path ?? Config.GalleryPath;
-            var GalleryPath = $"{path}\\";
 
-            if (!Directory.Exists($"{GalleryPath}"))
+            if (!Directory.Exists(path))
                 return;
 
-            var csvFile = new FileInfo($"{GalleryPath}Definitions.csv");
+            var csvFile = new FileInfo(Path.Combine(path, "Definitions.csv"));
 
             if (!csvFile.Exists) {
-                GenerateDefinitions(GalleryPath);
-                csvFile = new FileInfo($"{GalleryPath}Definitions_auto.csv");
+                GenerateDefinitions(path);
+                csvFile = new FileInfo(Path.Combine(path, "Definitions_auto.csv"));
                 if (!csvFile.Exists)
                     return;
             }
@@ -147,7 +146,7 @@ namespace Edi.Core.Gallery.Definition
             //Detect Variants
             newDefinitionFile = newDefinitionFile.DistinctBy(x => x.Name).ToList();
 
-            using (var csv = new CsvWriter(new FileInfo($"{GalleryPath}Definitions_auto.csv").CreateText(), CultureInfo.InvariantCulture))
+            using (var csv = new CsvWriter(new FileInfo(Path.Combine(GalleryPath, "Definitions_auto.csv")).CreateText(), CultureInfo.InvariantCulture))
             {
                 csv.WriteRecords(newDefinitionFile);
             }

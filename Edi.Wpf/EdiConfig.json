@@ -1,6 +1,6 @@
 {
   "Gallery": {
-    "GalleryPath": "D:\\Programacion\\Mage Kanade’s Futanari Dungeon Quest\\BepInEx\\plugins\\Gallery",
+    "GalleryPath": "./Gallery",
     "GenerateDefinitionFromChapters": false,
     "GenerateChaptersFromDefinition": false
   },
@@ -75,7 +75,7 @@
   },
   "Games": {
     "Games": {
-      "My Game": "D:\\Games\\MyGame\\Gallery"
+      "My Game": "./Gallery"
     }
   }
 }
