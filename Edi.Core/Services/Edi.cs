@@ -5,7 +5,6 @@ using Edi.Core.Gallery;
 using Edi.Core.Device.Interfaces;
 using Timer = System.Timers.Timer;
 using Edi.Core.Gallery.Definition;
-using NAudio.Wave.SampleProviders;
 using CsvHelper;
 using CsvHelper.Configuration;
 using Edi.Core.Gallery.Funscript;
