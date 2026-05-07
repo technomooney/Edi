@@ -1,0 +1,20 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Edi.Avalonia.Forms.SimulateGame"
+        Title="Preview Player"
+        Height="441" Width="131"
+        CanResize="False"
+        ShowInTaskbar="True"
+        MinWidth="131" MinHeight="441"
+        MaxWidth="131" MaxHeight="441">
+    <Grid>
+        <ProgressBar HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Width="80"
+                     Height="380"
+                     Orientation="Vertical"
+                     Minimum="0"
+                     Maximum="100"
+                     Value="{Binding SimulatorDevice.ProgressValue}"/>
+    </Grid>
+</Window>

@@ -72,5 +72,10 @@
   },
   "EStim": {
     "DeviceId": -1
+  },
+  "Games": {
+    "Games": {
+      "My Game": "D:\\Games\\MyGame\\Gallery"
+    }
   }
 }
