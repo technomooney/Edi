@@ -217,16 +217,8 @@ namespace Edi.Core.Services
                 : _gameConfigPath; // Ruta por defecto
 
             // Actualizar el diccionario en memoria
-            if (_configurations.ContainsKey(typeName))
-            {
-                _configObject[typeName] = config;
-                _configurations[typeName] = configJson;
-            }
-            else
-            {
-                _configObject.Add(typeName, config);
-                _configurations.Add(typeName, configJson);
-            }
+            _configObject[typeName] = config;
+            _configurations[typeName] = configJson;
 
             // Cargar las configuraciones existentes del archivo objetivo
             var existingConfigs = new Dictionary<string, JObject>();
